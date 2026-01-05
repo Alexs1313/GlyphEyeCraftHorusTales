@@ -9,6 +9,7 @@ import {
   Text,
   View,
   Alert,
+  Linking,
 } from 'react-native';
 import { useGlyphEyeStore } from '../GlyphEyeCraftStore/glyphEyeCraftCntxt';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -158,7 +159,14 @@ const GlyphEyeCraftSettings = () => {
               <Text style={styles.glyphEyeSettBoxText}>Reset progress</Text>
             </Pressable>
 
-            <Pressable style={styles.glyphEyeSettBox}>
+            <Pressable
+              style={styles.glyphEyeSettBox}
+              onPress={() =>
+                Linking.openURL(
+                  'https://www.termsfeed.com/live/144cbaeb-43b7-44a0-be23-3e6d5b15154c',
+                )
+              }
+            >
               <Text style={styles.glyphEyeSettBoxText}>Terms of use</Text>
             </Pressable>
           </View>

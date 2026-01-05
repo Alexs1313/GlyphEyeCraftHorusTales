@@ -50,7 +50,7 @@ const GlyphEyeLibrarySection = () => {
   const storyCard = ({ item }) => {
     return (
       <TouchableOpacity
-        style={styles.storyCardWrap}
+        style={styles.glyphStoryCardWrap}
         activeOpacity={0.85}
         onPress={() =>
           navigation.navigate('GlyphEyeStoryDetail', { storyId: item.id })

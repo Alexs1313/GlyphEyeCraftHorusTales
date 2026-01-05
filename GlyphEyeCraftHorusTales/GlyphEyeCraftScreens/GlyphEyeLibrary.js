@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import {
   deleteGlyphStory,
 } from '../glyphEyeCraftUtils';
 import { useGlyphEyeStore } from '../GlyphEyeCraftStore/glyphEyeCraftCntxt';
+import { BlurView } from '@react-native-community/blur';
 
 const SECTIONS = [
   { key: 'all', label: 'All' },
@@ -250,9 +251,7 @@ const GlyphEyeLibrary = () => {
                 contentContainerStyle={{ paddingBottom: 20 }}
               />
             ) : (
-              <Text style={styles.emptyText}>
-                No custom stories yet — press + to add
-              </Text>
+              <Text style={styles.emptyText}>No stories yet</Text>
             )}
           </View>
         </View>
@@ -264,6 +263,12 @@ const GlyphEyeLibrary = () => {
         transparent={true}
         onRequestClose={() => setModalVisible(false)}
       >
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          blurType="dark"
+          blurAmount={1}
+          reducedTransparencyFallbackColor="black"
+        />
         <View style={styles.glyphModalOverlay}>
           <View style={styles.glyphModalCard}>
             <View style={styles.glyphModalHeader}>
@@ -421,7 +426,8 @@ const styles = StyleSheet.create({
   },
   glyphModalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor:
+      Platform.OS === 'android' ? 'rgba(0,0,0,0.45)' : 'transparent',
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
