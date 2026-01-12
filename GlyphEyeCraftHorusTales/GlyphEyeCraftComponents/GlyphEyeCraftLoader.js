@@ -53,6 +53,12 @@ const GlyphEyeCraftLoader = () => {
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
+        <View style={{ alignItems: 'center', marginTop: 110 }}>
+          <Image
+            source={require('../../assets/images/glyphEyeCraftLoaderLogo.png')}
+            style={{ width: 280, height: 160, marginBottom: 90 }}
+          />
+        </View>
         <View style={styles.glyphBox}>
           <Animated.Image
             source={require('../../assets/images/glyphEyeCraftLoaderBook.png')}
@@ -61,9 +67,6 @@ const GlyphEyeCraftLoader = () => {
               { transform: [{ translateY: bounceGlyphAnim }] },
             ]}
             resizeMode="contain"
-          />
-          <Image
-            source={require('../../assets/images/glyphEyeCraftLoaderLogo.png')}
           />
         </View>
       </ScrollView>

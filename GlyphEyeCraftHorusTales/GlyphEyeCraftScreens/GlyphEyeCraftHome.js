@@ -165,8 +165,8 @@ const GlyphEyeCraftHome = () => {
           </View>
           <View>
             <Image
-              source={require('../../assets/images/glyphEyeLogo.png')}
-              style={{ top: 20 }}
+              source={require('../../assets/images/glyphEyeCraftLoaderLogo.png')}
+              style={{ top: 20, width: 380, height: 180 }}
             />
           </View>
 

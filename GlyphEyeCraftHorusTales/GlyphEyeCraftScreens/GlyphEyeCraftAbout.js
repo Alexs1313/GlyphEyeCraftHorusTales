@@ -63,7 +63,7 @@ const GlyphEyeCraftAbout = () => {
             }}
           >
             <Text style={styles.glyphEyeAboutText}>
-              {`GlyphEye Craft: Horus Tales invites you into a world where stories, memory, and ancient wisdom intertwine. 
+              {`Ey Ot |Morrsu: craft tales invites you into a world where stories, memory, and ancient wisdom intertwine. 
 
 Each session reveals fragments of Egypt’s timeless myths — moments where gods, stars, and people share the same horizon. 
 As you explore, you’ll test your knowledge, uncover relics of forgotten lore, and feel the calm rhythm of discovery that guided the scribes and dreamers of old.
