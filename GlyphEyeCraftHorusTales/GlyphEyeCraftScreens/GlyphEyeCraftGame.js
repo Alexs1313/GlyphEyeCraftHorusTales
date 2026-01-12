@@ -217,9 +217,17 @@ const GlyphEyeCraftQuiz = () => {
                       gap: 13,
                     }}
                   >
-                    <Image
-                      source={require('../../assets/images/glyphChatLogo.png')}
-                    />
+                    {Platform.OS === 'android' ? (
+                      <Image
+                        source={require('../../assets/images/andrbell.png')}
+                        style={{ width: 100, height: 100 }}
+                        resizeMode="contain"
+                      />
+                    ) : (
+                      <Image
+                        source={require('../../assets/images/glyphChatLogo.png')}
+                      />
+                    )}
                     <ImageBackground
                       source={require('../../assets/images/glyphgmBoard.png')}
                       resizeMode="stretch"

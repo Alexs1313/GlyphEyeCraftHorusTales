@@ -10,6 +10,7 @@ import {
   View,
   Alert,
   Linking,
+  Platform,
 } from 'react-native';
 import { useGlyphEyeStore } from '../GlyphEyeCraftStore/glyphEyeCraftCntxt';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -142,15 +143,17 @@ const GlyphEyeCraftSettings = () => {
                 onValueChange={toggleNotifications}
               />
             </View>
-            <View style={styles.glyphEyeSettBox}>
-              <Text style={styles.glyphEyeSettBoxText}>Background music</Text>
-              <Switch
-                thumbColor={'#fff'}
-                trackColor={{ false: '#767577', true: '#AA2C2D' }}
-                value={glyphEyeSoundEnabled}
-                onValueChange={toggleSound}
-              />
-            </View>
+            {Platform.OS === 'ios' && (
+              <View style={styles.glyphEyeSettBox}>
+                <Text style={styles.glyphEyeSettBoxText}>Background music</Text>
+                <Switch
+                  thumbColor={'#fff'}
+                  trackColor={{ false: '#767577', true: '#AA2C2D' }}
+                  value={glyphEyeSoundEnabled}
+                  onValueChange={toggleSound}
+                />
+              </View>
+            )}
 
             <Pressable
               style={styles.glyphEyeSettBox}
@@ -158,19 +161,35 @@ const GlyphEyeCraftSettings = () => {
             >
               <Text style={styles.glyphEyeSettBoxText}>Reset progress</Text>
             </Pressable>
-
-            <Pressable
-              style={styles.glyphEyeSettBox}
-              onPress={() =>
-                Linking.openURL(
-                  'https://www.termsfeed.com/live/144cbaeb-43b7-44a0-be23-3e6d5b15154c',
-                )
-              }
-            >
-              <Text style={styles.glyphEyeSettBoxText}>Terms of use</Text>
-            </Pressable>
+            {Platform.OS === 'ios' && (
+              <Pressable
+                style={styles.glyphEyeSettBox}
+                onPress={() =>
+                  Linking.openURL(
+                    'https://www.termsfeed.com/live/144cbaeb-43b7-44a0-be23-3e6d5b15154c',
+                  )
+                }
+              >
+                <Text style={styles.glyphEyeSettBoxText}>Terms of use</Text>
+              </Pressable>
+            )}
           </View>
         </View>
+
+        {Platform.OS === 'android' && (
+          <Image
+            source={require('../../assets/images/andrbell.png')}
+            style={{
+              width: 250,
+              height: 200,
+              resizeMode: 'contain',
+              position: 'absolute',
+              bottom: 40,
+              right: -20,
+              zIndex: -1,
+            }}
+          />
+        )}
       </ScrollView>
     </ImageBackground>
   );

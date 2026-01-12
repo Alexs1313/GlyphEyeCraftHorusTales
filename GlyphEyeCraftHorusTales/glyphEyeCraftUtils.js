@@ -300,3 +300,48 @@ export const setGlyphStorySection = async (storyId, section) => {
     return null;
   }
 };
+
+const USER_STORIES_KEY = 'GlyphEyeUserStories_v1';
+
+export const getUserStories = async () => {
+  try {
+    const raw = await AsyncStorage.getItem(USER_STORIES_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    console.warn('getUserStories error =>', err);
+    return [];
+  }
+};
+
+export const saveUserStories = async stories => {
+  try {
+    await AsyncStorage.setItem(USER_STORIES_KEY, JSON.stringify(stories));
+    return true;
+  } catch (err) {
+    console.warn('saveUserStories error =>', err);
+    return false;
+  }
+};
+
+export const addUserStory = async story => {
+  if (!story || !story.id) return null;
+
+  const existing = await getUserStories();
+  const updated = [story, ...existing];
+
+  await saveUserStories(updated);
+  return story;
+};
+
+export const deleteUserStory = async storyId => {
+  if (!storyId) return false;
+
+  const existing = await getUserStories();
+  const filtered = existing.filter(s => s.id !== storyId);
+
+  await saveUserStories(filtered);
+  return true;
+};

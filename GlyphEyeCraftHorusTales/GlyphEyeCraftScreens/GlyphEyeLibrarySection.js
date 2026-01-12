@@ -25,10 +25,10 @@ const GlyphEyeLibrarySection = () => {
   const [stories, setStories] = useState([]);
 
   const SECTION_LABEL = {
-    glyphall: 'All',
-    glyphplan: 'Plan to Read',
-    glyphreading: 'Reading',
-    glyphread: 'Read',
+    all: 'All',
+    plan: 'Plan to Read',
+    reading: 'Reading',
+    read: 'Read',
   };
 
   useFocusEffect(
@@ -239,6 +239,22 @@ const styles = StyleSheet.create({
     color: '#F5E4D0',
     fontFamily: 'Poppins-Medium',
     fontSize: 13,
+  },
+  allBtn: {
+    width: 170,
+    height: 68,
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#C28B64',
+    borderRadius: 2,
+    flexDirection: 'row',
+    gap: 12,
+  },
+  allBtnText: {
+    color: '#5C1B00',
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 16,
   },
 });
 

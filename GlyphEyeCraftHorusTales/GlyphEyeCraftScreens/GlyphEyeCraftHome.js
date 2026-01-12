@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   Image,
   ImageBackground,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -162,16 +163,32 @@ const GlyphEyeCraftHome = () => {
               <Image source={require('../../assets/images/glyphEyeSett.png')} />
             </Pressable>
           </View>
-          <Image
-            source={require('../../assets/images/glyphEyeLogo.png')}
-            style={{ top: 20 }}
-          />
+          <View>
+            <Image
+              source={require('../../assets/images/glyphEyeLogo.png')}
+              style={{ top: 20 }}
+            />
+          </View>
 
           <View>
             <Image
               source={require('../../assets/images/glyphEyeCat.png')}
               style={{ zIndex: 1 }}
             />
+            {Platform.OS === 'android' && (
+              <Image
+                source={require('../../assets/images/andrbell.png')}
+                style={{
+                  width: 250,
+                  height: 200,
+                  resizeMode: 'contain',
+                  position: 'absolute',
+                  bottom: 140,
+                  right: -20,
+                  zIndex: -1,
+                }}
+              />
+            )}
             <Image
               source={require('../../assets/images/glyphEyeCatbg1.png')}
               style={{ position: 'absolute', bottom: -80, left: -30 }}

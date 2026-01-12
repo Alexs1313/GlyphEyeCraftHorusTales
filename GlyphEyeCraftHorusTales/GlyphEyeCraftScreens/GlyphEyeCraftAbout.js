@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import {
   Image,
   ImageBackground,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -71,6 +72,20 @@ The Eye of Horus watches your progress. Every correct answer brightens its light
             </Text>
           </ImageBackground>
         </View>
+        {Platform.OS === 'android' && (
+          <Image
+            source={require('../../assets/images/cher.png')}
+            style={{
+              width: 250,
+              height: 200,
+              resizeMode: 'contain',
+              position: 'absolute',
+              bottom: 0,
+              right: -20,
+              zIndex: -1,
+            }}
+          />
+        )}
       </ScrollView>
     </ImageBackground>
   );

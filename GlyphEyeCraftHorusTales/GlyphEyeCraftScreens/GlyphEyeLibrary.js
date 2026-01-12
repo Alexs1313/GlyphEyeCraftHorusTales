@@ -16,14 +16,15 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { initialStories } from '../GlyphEyeCraftData/initialStories';
 
-// locals
 import {
-  ensureInitialGlyphStories,
-  getAllGlyphStories,
-  addGlyphStory,
-  deleteGlyphStory,
+  ensureInitialStories,
+  getAllStories,
+  getUserStories,
+  saveUserStories,
 } from '../glyphEyeCraftUtils';
+
 import { useGlyphEyeStore } from '../GlyphEyeCraftStore/glyphEyeCraftCntxt';
 import { BlurView } from '@react-native-community/blur';
 
@@ -36,78 +37,68 @@ const SECTIONS = [
 
 const GlyphEyeLibrary = () => {
   const navigation = useNavigation();
+  const { glyphEyeNotificationsEnabled } = useGlyphEyeStore();
+
   const [allStories, setAllStories] = useState([]);
   const [userStories, setUserStories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const { glyphEyeNotificationsEnabled } = useGlyphEyeStore();
 
   const [title, setTitle] = useState('');
   const [genre, setGenre] = useState('');
   const [content, setContent] = useState('');
 
+  // INIT
   useFocusEffect(
     useCallback(() => {
-      getGlyphStories();
+      const init = async () => {
+        await ensureInitialStories(initialStories);
+
+        const systemStories = (await getAllStories()) || [];
+        setAllStories(systemStories);
+
+        const storedUserStories = await getUserStories();
+        setUserStories(storedUserStories);
+      };
+      init();
     }, []),
   );
 
-  const getGlyphStories = async () => {
-    await ensureInitialGlyphStories();
-
-    const allGlyphStories = (await getAllGlyphStories()) || [];
-
-    setAllStories(allGlyphStories);
-
-    const glyphUsers = allGlyphStories.filter(
-      story =>
-        story.isUser === true ||
-        (typeof story.id === 'string' && story.id.startsWith('user-')),
-    );
-
-    glyphUsers.sort((glyphA, glyphB) => (glyphB.id > glyphA.id ? 1 : -1));
-
-    setUserStories(glyphUsers);
-  };
-
-  const onSaveNewStory = async () => {
+  // ADD USER STORY
+  const onSaveNewStory = () => {
     if (!title.trim()) {
       Alert.alert('Please enter a title.');
       return;
     }
-    const glyphUserID = `user-${Date.now()}`;
 
-    const newGlyphStoryToSave = {
-      id: glyphUserID,
+    const newStory = {
+      id: `user-${Date.now()}`,
       title: title.trim(),
       genre: genre.trim() || 'Unknown',
       content: content.trim() || '',
       section: 'all',
+      isUser: true,
     };
-    const addedSt = await addGlyphStory(newGlyphStoryToSave);
 
-    if (addedSt) {
-      if (glyphEyeNotificationsEnabled) {
-        Toast.show({
-          type: 'success',
-          text1: 'Legend added!',
-        });
-      }
-      setAllStories(prevS => [...prevS, addedSt]);
+    setUserStories(prev => {
+      const updated = [newStory, ...prev];
+      saveUserStories(updated);
+      return updated;
+    });
 
-      setUserStories(prevU => [addedSt, ...prevU]);
-
-      setModalVisible(false);
-
-      setTitle('');
-
-      setGenre('');
-
-      setContent('');
-    } else {
-      Alert.alert('Error', 'Failed to save story');
+    if (glyphEyeNotificationsEnabled) {
+      Toast.show({
+        type: 'success',
+        text1: 'Legend added!',
+      });
     }
+
+    setModalVisible(false);
+    setTitle('');
+    setGenre('');
+    setContent('');
   };
 
+  // DELETE USER STORY
   const onLongPressDelete = storyId => {
     Alert.alert(
       'Delete Legend',
@@ -117,25 +108,18 @@ const GlyphEyeLibrary = () => {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: async () => {
-            const isConf = await deleteGlyphStory(storyId);
-            if (isConf) {
-              setAllStories(prevS =>
-                prevS.filter(story => story.id !== storyId),
-              );
+          onPress: () => {
+            setUserStories(prev => {
+              const updated = prev.filter(story => story.id !== storyId);
+              saveUserStories(updated);
+              return updated;
+            });
 
-              setUserStories(prevU =>
-                prevU.filter(story => story.id !== storyId),
-              );
-
-              if (glyphEyeNotificationsEnabled) {
-                Toast.show({
-                  type: 'success',
-                  text1: 'Legend deleted!',
-                });
-              }
-            } else {
-              Alert.alert('Error', 'Failed to delete story');
+            if (glyphEyeNotificationsEnabled) {
+              Toast.show({
+                type: 'success',
+                text1: 'Legend deleted!',
+              });
             }
           },
         },
@@ -147,30 +131,28 @@ const GlyphEyeLibrary = () => {
     navigation.navigate('GlyphEyeLibrarySection', { section: key });
   };
 
-  const glyphCreatedCard = ({ item }) => {
-    return (
-      <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={() =>
-          navigation.navigate('GlyphEyeMyStories', { storyId: item.id })
-        }
-        onLongPress={() => onLongPressDelete(item.id)}
+  const glyphCreatedCard = ({ item }) => (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() =>
+        navigation.navigate('GlyphEyeMyStories', { storyId: item.id })
+      }
+      onLongPress={() => onLongPressDelete(item.id)}
+    >
+      <ImageBackground
+        source={require('../../assets/images/glyphgmBoard.png')}
+        resizeMode="stretch"
+        style={styles.glyphStoryCard}
       >
-        <ImageBackground
-          source={require('../../assets/images/glyphgmBoard.png')}
-          resizeMode="stretch"
-          style={styles.glyphStoryCard}
-        >
-          <Text style={styles.glyphStoryTitle}>{item.title}</Text>
-          <View style={styles.glyphGenreRow}>
-            <View style={styles.glyphSectionPill}>
-              <Text style={styles.glyphSectionPillText}>{item.genre}</Text>
-            </View>
+        <Text style={styles.glyphStoryTitle}>{item.title}</Text>
+        <View style={styles.glyphGenreRow}>
+          <View style={styles.glyphSectionPill}>
+            <Text style={styles.glyphSectionPillText}>{item.genre}</Text>
           </View>
-        </ImageBackground>
-      </TouchableOpacity>
-    );
-  };
+        </View>
+      </ImageBackground>
+    </TouchableOpacity>
+  );
 
   return (
     <ImageBackground
@@ -178,7 +160,7 @@ const GlyphEyeLibrary = () => {
       style={styles.glyphView}
     >
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.glyphHeader}>
@@ -201,6 +183,7 @@ const GlyphEyeLibrary = () => {
           </ImageBackground>
         </View>
 
+        {/* SECTIONS */}
         <View style={styles.glyphSectionGrid}>
           {SECTIONS.map(s => (
             <TouchableOpacity
@@ -225,6 +208,7 @@ const GlyphEyeLibrary = () => {
           ))}
         </View>
 
+        {/* MY STORIES */}
         <View style={{ marginTop: 18, alignItems: 'center' }}>
           <ImageBackground
             source={require('../../assets/images/glyphEyeHeader.png')}
@@ -242,26 +226,42 @@ const GlyphEyeLibrary = () => {
           </TouchableOpacity>
 
           <View style={{ width: '100%', marginTop: 12, paddingHorizontal: 4 }}>
-            {userStories && userStories.length > 0 ? (
+            {userStories.length > 0 ? (
               <FlatList
                 data={userStories}
                 keyExtractor={i => i.id}
-                renderItem={item => glyphCreatedCard(item)}
+                renderItem={glyphCreatedCard}
                 scrollEnabled={false}
-                contentContainerStyle={{ paddingBottom: 20 }}
               />
             ) : (
               <Text style={styles.emptyText}>No stories yet</Text>
             )}
           </View>
         </View>
+
+        {Platform.OS === 'android' && (
+          <Image
+            source={require('../../assets/images/grape.png')}
+            style={{
+              width: 250,
+              height: 250,
+              resizeMode: 'contain',
+              position: 'absolute',
+              bottom: 0,
+              right: -50,
+              zIndex: -1,
+            }}
+          />
+        )}
       </ScrollView>
 
+      {/* MODAL */}
       <Modal
         visible={modalVisible}
         animationType="slide"
-        transparent={true}
+        transparent
         onRequestClose={() => setModalVisible(false)}
+        statusBarTranslucent={Platform.OS === 'android'}
       >
         <BlurView
           style={StyleSheet.absoluteFill}
@@ -320,7 +320,6 @@ const GlyphEyeLibrary = () => {
                 source={require('../../assets/images/glyphEyeBtn.png')}
                 resizeMode="stretch"
                 style={{
-                  width: '100%',
                   height: 60,
                   justifyContent: 'center',
                   alignItems: 'center',
