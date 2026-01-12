@@ -1,6 +1,6 @@
 workflows:
   ios-workflow:
-    name: 'GlyphEye Craft: Horus Tales'
+    name: 'Ey Ot |Morrsu: craft tales'
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
@@ -44,4 +44,4 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_app_store: true
-        copyright: 'GlyphEye Craft: Horus Tales 2026'
+        copyright: 'Ey Ot |Morrsu: craft tales 2026'
